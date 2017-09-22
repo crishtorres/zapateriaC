@@ -13,6 +13,8 @@ int promedio (float num,float num1){
 int main(){
     char respuesta[2];
     char nombre[25];
+    char apellido[25];
+    char nCompleto[50];
     int diaNac = 0;
     int prod = 0;
     int ret = 0;
@@ -37,7 +39,13 @@ int main(){
         system("clear");
         printf("Ingrese Nombre del cliente \n");
         scanf("%s",nombre);
-
+        
+        system("clear");
+        printf("Ingrese Apellido del cliente \n");
+        scanf("%s",apellido);
+           
+        nCompleto = strcat(nombre,apellido);
+        
         system("clear");
         printf("Ingrese dia de nacimiento \n");
         scanf("%i",&diaNac);
