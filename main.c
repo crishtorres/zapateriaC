@@ -74,8 +74,19 @@ int main(){
             }
 
             system("clear");
-            printf("Ingrese la cantidad de pares a adquirir\n");
-            scanf("%d",&cantidad);
+            
+            do{
+                printf("Ingrese la cantidad de pares a adquirir\n");
+                scanf("%d",&cantidad);
+                
+                if(cantidad<=0){
+                    printf("La cantidad ingresada es incorrecta! Presione enter e intente nuevamente\n");
+                }
+            }
+            while (cantidad!=0);
+                
+            //printf("Ingrese la cantidad de pares a adquirir\n");
+            //scanf("%d",&cantidad);
 
             system("clear");
             for(i=0;i<cantidad;i++){
