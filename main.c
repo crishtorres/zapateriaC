@@ -21,10 +21,15 @@ int main(){
     int cantidad = 0;
     int i=0;
     float talle=0;
-
-    printf("¿Desea comenzar a atender? Ingrese SI o NO\n");
-    scanf("%s",respuesta);
-
+    
+    do{       
+        printf("¿Desea comenzar a atender? Ingrese SI o NO\n");
+        scanf("%s",respuesta);    
+        if(respuesta!="SI" && respuesta!="NO"){
+            printf("Respuesta incorrecta.Solo se admite SI o NO. Presione enter para continuar\n");   
+        }
+    }while(respuesta!="SI" && respuesta!="NO");
+    
     ret = strcmp("SI",respuesta);
 
     while(ret==0){
