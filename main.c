@@ -46,7 +46,8 @@ int main(){
 
 
     ret = strncmp("SI",respuesta,2);
-
+    //VERIFICAR
+    //strcomp() no tiene en cuenta mayusculas ni minusculas
     while(ret==0){
 
     	nroPedido = 0;
