@@ -51,7 +51,6 @@ int main(){
 
     }while(ret==0 && ret1==0);
 
-
     ret = strncmp("SI",respuesta,2);
 
     while(ret==0){
@@ -149,7 +148,6 @@ int main(){
 
         printf("El vuelto es %-3.2f \n \n",vuelto);
 
-
         precio=0;
         recargos=0;
         descuentos=0;
@@ -185,7 +183,6 @@ int main(){
     printf("Total cantidad vendida de cBotines : %d \n", cBotines);
 
     printf("Total recaudado : %-3.2f \n",totFinal); 
-
 
     return 0;
 
