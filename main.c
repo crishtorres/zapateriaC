@@ -6,10 +6,12 @@ int mProductos(); //Aqui devolvemos el codigo de producto para saber que menu de
 float mMarcas(int); //Aqui establecemos el precio base del producto
 int mostrarPedido(); //Para mostrar el numero de pedido y nombre de cliente
 int mostrarMP(); //Para mostrar los medios de pago
-float descuentoDia(int); //Calcual si tiene descuento promocion por dia de nacimiento
+float descuentoDia(int); //Calcula si tiene descuento promocion por dia de nacimiento
+int borrarPantalla(); //Para Borrar la pantalla
 
 //Variables Globales
-char nombre[25];
+
+char nCompleto[50];
 int nroPedido = 0;
 float descuentos = 0;
 float recargos = 0;
@@ -21,7 +23,7 @@ int cBotines=0;
 int main(){
     char respuesta[2];
     char apellido[25];
-    char nCompleto[50];
+    char nombre[25];
     int diaNac = 0;
     int prod = 0;
     int ret = 0; 
@@ -36,7 +38,8 @@ int main(){
     float totZapatillas=0;
     float totBotines=0;
     float totFinal=0;
-    
+    float recTalle=0;
+    int mpSelecionado =0;
 
     do{       
         printf("¿Desea comenzar a atender? Ingrese SI o NO\n");
@@ -51,20 +54,22 @@ int main(){
 
     }while(ret==0 && ret1==0);
 
+
     ret = strncmp("SI",respuesta,2);
 
     while(ret==0){
 
     	nroPedido = 0;
-        system("clear");
+        borrarPantalla();
         printf("Ingrese Nombre del cliente :\n");
         scanf("%s",nombre);
-        
+   
         printf("\nIngrese Apellido del cliente :\n");
         scanf("%s",apellido);
            
         strcat(nombre," ");
-        strcat(nombre,apellido);
+        strcat(nCompleto,nombre);
+        strcat(nCompleto,apellido);
 
         printf("\nIngrese dia de nacimiento :\n");
         scanf("%i",&diaNac);
@@ -94,15 +99,24 @@ int main(){
                 printf("ingrese el talle para el par nº %d \n",i+1);
                 scanf("%f",&talle);
 
-                if(talle>44){
-                    //precio = precio * 1.10;
-                    recargos+= (10*precio) /100;
+                if(talle>44){                                        
+                    recTalle+= (10*precio) /100;
                 }
             }
 
-            system("clear");
+            precio=precio * cantidad;
+            precio +=recTalle;
+
+            switch(prod){
+            	case 1: cZapatillas+=cantidad; break;
+            	case 2: cBotines+=cantidad; break;
+            	case 3: cZapatos+=cantidad; break;
+            }
+
+            mostrarPedido();
+
             do{       
-		        printf("¿Desea seguir comprando para el cliente %s? Ingrese SI o NO\n",nombre);
+		        printf("¿Desea seguir comprando para el cliente %s? Ingrese SI o NO\n",nCompleto);
 		        scanf("%s",respuesta);    
 
 		        ret = strncmp("SI",respuesta,2);
@@ -121,13 +135,13 @@ int main(){
         //SI PONE QUE NO DESEA SEGUIR ATENDIENDO A EL CLIENTE ACTUAL PREGUNTO MEDIOS DE PAGO    
         mostrarPedido();
 
-        descuentoDia(diaNac);
-        mostrarMP();
+        //descuentoDia(diaNac);
+        mpSelecionado = mostrarMP();
 
-        system("clear");
+        borrarPantalla();
         printf("*********************************************************************\n");
         printf("\n");
-        printf("PEDIDO DE %s \n", nombre);
+        printf("PEDIDO DE %s \n", nCompleto);
         printf("\n");
         printf("IMPORTE ****************************************************** %-3.2f \n",precio);
         printf("\n");
@@ -138,22 +152,33 @@ int main(){
         total = (precio - descuentos) + recargos;
         printf("TOTAL ******************************************************** %-3.2f \n",total); 
         printf("\n");
-        printf("*********************************************************************\n \n");
 
-        printf("Ingrese importe recibido \n");
-        scanf("%f",&impRecibido);
+        //SI ES EFECTIVO
+        if(mpSelecionado==1){
+        	do{
+        		printf("Ingrese importe recibido \n");
+	        	scanf("%f",&impRecibido);
 
-        totFinal+=total; 
-        vuelto = (impRecibido - total);
+	        	if(impRecibido<total){
+	        		//borrarPantalla();
+		            printf("El dinero recibido es menor al importe total. Ingrese nuevamente\n \n");   
+		        }
 
-        printf("El vuelto es %-3.2f \n \n",vuelto);
+        	}while(impRecibido<total);
+	        
+	        totFinal+=total; 
+	        vuelto = (impRecibido - total);
+
+	        printf("El vuelto es %-3.2f \n \n",vuelto);
+        }
 
         precio=0;
         recargos=0;
         descuentos=0;
         total=0;
-        //system("clear");
-        
+        recTalle=0;
+        cantidad=0; mpSelecionado=0;
+
         do{       
 	        printf("¿Desea seguir atendiendo? Ingrese SI o NO\n");
 	        scanf("%s",respuesta);    
@@ -177,12 +202,13 @@ int main(){
     //Producto que más se vendio
     //Total de Zapatillas, Zapatos y Botines vendidos
 
-    system("clear");
+    borrarPantalla();
     printf("Total cantidad vendida de Zapatillas : %d \n", cZapatillas);
     printf("Total cantidad vendida de Zapatos : %d \n", cZapatos);
-    printf("Total cantidad vendida de cBotines : %d \n", cBotines);
+    printf("Total cantidad vendida de Botines : %d \n", cBotines);
 
     printf("Total recaudado : %-3.2f \n",totFinal); 
+
 
     return 0;
 
@@ -198,14 +224,36 @@ float descuentoDia(int dia){
 int mostrarMP(){
 
 	int opcion=0;
+	int opcionSel=0;
 
-	printf("Seleccione el Medio de Pago \n1) Efectivo \n2) Tarjeta de Crédito\n");
-    scanf("%d",&opcion);
-    system("clear");
-    if(opcion==2){
+	printf("Total a pagar $ %-3.2f \n\n",precio);
+	
+	do{
+		printf("Seleccione el Medio de Pago \n1) Efectivo \n2) Tarjeta de Crédito\n");
+    	scanf("%d",&opcionSel);
+
+	    if(opcionSel!=1 || opcionSel!=2){
+        	borrarPantalla();
+            printf("Respuesta incorrecta. Intente Nuevamente.\n \n");   
+        }
+		
+	}while(opcionSel!=1 && opcionSel!=2);
+
+
+    borrarPantalla();
+    if(opcionSel==2){
     	//Es Tarjeta
-    	printf("Ingrese cantidad de cuotas : \n1) 3 Cuotas (Sin interés) \n2) 6 Cuotas (10%% de interés) \n3) 12 Cuotas (20%% de interés)\n");
-    	scanf("%d",&opcion);
+
+    	do{
+			printf("Ingrese cantidad de cuotas : \n1) 3 Cuotas (Sin interés) \n2) 6 Cuotas (10%% de interés) \n3) 12 Cuotas (20%% de interés)\n");
+    		scanf("%d",&opcion);
+
+		    if(opcion!=1 || opcion!=2 || opcion!=3){
+	        	borrarPantalla();
+	            printf("Respuesta incorrecta. Intente Nuevamente.\n \n");   
+	        }
+		
+		}while(opcion!=1 && opcion!=2 && opcion!=3);
 
     	switch(opcion){
     		case 2: recargos+=(10*precio) /100; break;
@@ -213,19 +261,29 @@ int mostrarMP(){
     	}
     }
 
+    return opcionSel;
+
 }
 
 int mostrarPedido(){
-	system("clear");
-	printf("Pedido Nº %d de %s \n \n",nroPedido,nombre);
+	borrarPantalla();
+	printf("Pedido Nº %d de %s ($ %-3.2f)\n \n",nroPedido,nCompleto,precio);
 }
 
 int mProductos(){
 	int opcion=0;
 
-	printf("Seleccione el Producto a comprar \n1) Zapatillas \n2) Botines \n3) Zapatos\n");
-    scanf("%d",&opcion);
+	do{
+		printf("Seleccione el Producto a comprar \n1) Zapatillas \n2) Botines \n3) Zapatos\n");
+	    scanf("%d",&opcion);
 
+	    if(opcion!=1 || opcion!=2 || opcion!=3){
+        	borrarPantalla();
+            printf("Respuesta incorrecta. Intente Nuevamente.\n \n");   
+        }
+		
+	}while(opcion!=1 && opcion!=2 && opcion!=3);
+    
 	return opcion;
 
 }
@@ -235,32 +293,51 @@ float mMarcas(int menu){
 	int marca = 0;
 
 	switch(menu){
-        case 1:
-        	cZapatillas++;      
-            printf("Seleccione Marca de la Zapatilla \n1) Nike \n2) Adadis \n3) New Balance\n");
-            scanf("%d",&marca);
+        case 1: 
+        	do{ 
+            	printf("Seleccione Marca de la Zapatilla \n1) Nike \n2) Adidas \n3) New Balance\n");
+            	scanf("%d",&marca);  
+
+		        if(marca!=1 || marca!=2 || marca!=3){
+		        	borrarPantalla();
+		            printf("Respuesta incorrecta. Intente Nuevamente.\n \n");   
+		        }
+			}while(marca!=1 && marca!=2 && marca!=3);
+
             switch(marca){
-                case 1: precioB=800; break;
-                case 2: precioB=900; break;
-                case 3: precioB=1200; break;
+                case 1: precioB=1200; break;
+                case 2: precioB=1300; break;
+                case 3: precioB=1900; break;
             }
             break;
         case 2:
-        	cBotines++;
-            printf("Seleccione Marca de los Botines \n1) Topper \n2) Nike \n3) Adidas\n");
-            scanf("%d",&marca);
+        	do{
+	            printf("Seleccione Marca de los Botines \n1) Topper \n2) Umbro \n3) Adidas\n");
+	            scanf("%d",&marca);
+            	if(marca!=1 || marca!=2 || marca!=3){
+		        	borrarPantalla();
+		            printf("Respuesta incorrecta. Intente Nuevamente.\n \n");   
+		        }
+			}while(marca!=1 && marca!=2 && marca!=3);
+
             switch(marca){
-                case 1: precioB=1200; break;
-                case 2: precioB=2100; break;
-                case 3: precioB=1800; break;
+                case 1: precioB=1600; break;
+                case 2: precioB=1900; break;
+                case 3: precioB=2500; break;
             }
             break;
         case 3:
-        	cZapatos++;
-            printf("Seleccione Marca de los Zapatos \n1) Topper \n2) Nike \n3) Adidas\n");
-            scanf("%d",&marca);
+        	do{
+	            printf("Seleccione Marca de los Zapatos \n1) Timberland \n2) CAT \n3) Merrell\n");
+	            scanf("%d",&marca);
+	            if(marca!=1 || marca!=2 || marca!=3){
+		        	borrarPantalla();
+		            printf("Respuesta incorrecta. Intente Nuevamente.\n \n");   
+		        }
+			}while(marca!=1 && marca!=2 && marca!=3);
+
             switch(marca){
-                case 1: precioB=2200; break;
+                case 1: precioB=3500; break;
                 case 2: precioB=3100; break;
                 case 3: precioB=2800; break;
             }
@@ -268,4 +345,8 @@ float mMarcas(int menu){
     }
     precio+= precioB;
     //return precio;
+}
+
+int borrarPantalla(){
+	system("clear");
 }
