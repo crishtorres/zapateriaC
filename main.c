@@ -29,6 +29,7 @@ int zaTimberland=0;
 int zaCat=0;
 int zaMerrell=0;
 int marcaSel=0;
+float totDescuentos=0;
 
 int main(){
 
@@ -51,6 +52,7 @@ int main(){
     float totFinal=0;
     float recTalle=0;
     int mpSelecionado =0;
+    float pLocal=0;
 
     do{
 
@@ -98,7 +100,8 @@ int main(){
             mostrarPedido();
         	prod = mProductos();
             mostrarPedido();
-            mMarcas(prod);
+            pLocal = mMarcas(prod);
+
             mostrarPedido();
 
             do{
@@ -122,20 +125,24 @@ int main(){
                 scanf("%f",&talle);
 
                 if(talle>44){
-                    recTalle+= (10*precio) /100;
+                    recTalle+= (10*pLocal) /100;
                 }
             }
 
-            precio=precio * cantidad;
-            precio +=recTalle;
+            pLocal=pLocal * cantidad;
+            pLocal +=recTalle;
 
+            precio+=pLocal;
             switch(prod){
-            	case 1: cZapatillas+=cantidad; break;
-            	case 2: cBotines+=cantidad; break;
-            	case 3: cZapatos+=cantidad; break;
+            	case 1: cZapatillas+=cantidad; totZapatillas+=pLocal; break;
+            	case 2: cBotines+=cantidad; totBotines+=pLocal; break;
+            	case 3: cZapatos+=cantidad; totZapatos+=pLocal; break;
             }
 
             sumaCantidades(prod, cantidad);
+
+            pLocal=0;
+            recTalle=0;
 
             mostrarPedido();
 
@@ -200,6 +207,7 @@ int main(){
 
         precio=0;
         recargos=0;
+        totDescuentos+=descuentos;
         descuentos=0;
         total=0;
         recTalle=0;
@@ -222,24 +230,23 @@ int main(){
         ret = strncmp("SI",respuesta,2);
     }
 
-    //Muestro cierre de día
-    //Total recaudado
-    //Total recaudado por producto
-    //Producto que más se vendio
-    //Total de Zapatillas, Zapatos y Botines vendidos
+    //Cierre de día
 
     borrarPantalla();
     printf ("\n\n\t\t\t\t*********************");
     printf ("\n\n\t\t\t\t MUNDO DEPORTIVO GG");
     printf ("\n\n\t\t\t\t*********************\n\n");
 
-    printf("Total cantidad vendida de Zapatillas : %d \n", cZapatillas);
-    printf("Total cantidad vendida de Zapatos : %d \n", cZapatos);
-    printf("Total cantidad vendida de Botines : %d \n", cBotines);
+    printf("Total cantidad vendida de Zapatillas : %d ($ %-3.2f)\n", cZapatillas,totZapatillas);
+    printf("Total cantidad vendida de Zapatos : %d ($ %-3.2f)\n", cZapatos,totZapatos);
+    printf("Total cantidad vendida de Botines : %d ($ %-3.2f)\n", cBotines,totBotines);
 
     printf("\nSe detalla de la siguiente manera:\nZapatillas:\n\tNike: %i\n\tAdidas: %i\n\tNew Balance: %i\nZapatos:\n\tTimberland: %i\n\tCAT: %i\n\tMerrell: %i\nBotines:\n\tTopper: %i\n\tUmbro: %i\n\tDiadora: %i\n",zNike,zAdidas,zNbalance,zaTimberland,zaCat,zaMerrell,bTopper,bUmbro,bDiadora);
 
-    printf("\nTotal recaudado : %-3.2f \n",totFinal);
+    printf("\nTotal descuentos efectuados : %-3.2f \n",totDescuentos);
+    printf("Total recaudado : %-3.2f \n",totFinal);
+
+
     return 0;
 }
 
@@ -386,9 +393,9 @@ float mMarcas(int menu){
     }
 
     marcaSel=marca;
-    precio+= precioB;
+    //precio+= precioB;
 
-    return precio;
+    return precioB;
 }
 
 int sumaCantidades(int prod,int cant){
